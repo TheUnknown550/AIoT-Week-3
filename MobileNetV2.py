@@ -53,4 +53,5 @@ if __name__ == "__main__":
     # Note: Run this twice as per your task instructions:
     # 1. In 'Power Saver' mode (unplugged)
     # 2. In 'High Performance' mode
+    # np.random.seed(42)
     run_inference_test(num_images=100)
