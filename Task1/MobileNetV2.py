@@ -84,5 +84,5 @@ def run_performance_task(num_images=100):
 if __name__ == "__main__":
     # For Requirement #3: First run with seed for 'Same Images', 
     # then comment out for 'Different Images'.
-    # np.random.seed(42)
+    np.random.seed(1)
     run_performance_task(num_images=100)
