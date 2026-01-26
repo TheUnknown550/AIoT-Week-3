@@ -2,7 +2,7 @@ import requests
 import time
 import numpy as np
 
-URL = "http://172.20.10.3:5000/predict"
+URL = "http://127.0.0.1:5000/predict"
 
 def send_image():
     # Simulate a 224x224x3 image and convert to list

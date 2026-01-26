@@ -4,7 +4,7 @@ import numpy as np
 import psutil
 import os
 
-SERVER_IP = "172.20.10.3"
+SERVER_IP = "127.0.0.1"
 URL = f"http://{SERVER_IP}:5000/predict_batch"
 NUM_IMAGES = 100
 
