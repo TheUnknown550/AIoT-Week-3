@@ -18,12 +18,10 @@ CANVAS_SIZE = (1200, 1600)  # Height, Width
 MIN_CONTOUR_AREA = 500      # Ignore small noise
 DELAY_MS = 200              # Delay between frames
 
-# --- NEW: Adaptive Padding Ratio ---
-# 0.5 means "add 50% of the width/height" as padding.
-# Example: If a person is 100px tall, we add 50px padding above and below.
-PADDING_RATIO = 0.5  
+# Adaptive Padding
+PADDING_RATIO = 0.3         # 0.3 = Add 30% spacing around the group of objects
 
-# Body Merging Kernel
+# Morphological Kernel (Helps connect gaps before we calculate the box)
 MORPH_KERNEL = cv2.getStructuringElement(cv2.MORPH_RECT, (10, 30))
 
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -71,7 +69,6 @@ print(f"Processing {min_frames} synchronized frames...")
 subtractors = [cv2.createBackgroundSubtractorMOG2(history=500, varThreshold=50, detectShadows=True) for _ in range(3)]
 
 prev_frame_time = 0
-new_frame_time = 0
 
 # ==========================================
 # 4. MAIN LOOP
@@ -79,6 +76,7 @@ new_frame_time = 0
 for i in range(min_frames):
     extracted_rois = []
     
+    # --- Process each camera ---
     for cam_idx in range(3):
         path = image_paths[cam_idx][i]
         frame = cv2.imread(path)
@@ -94,29 +92,38 @@ for i in range(min_frames):
         # B. Find Contours
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
+        # --- NEW LOGIC: GROUPING ---
+        # Instead of cropping immediately, we collect all valid bounding boxes first
+        valid_boxes = []
         for cnt in contours:
-            area = cv2.contourArea(cnt)
-            
-            if area > MIN_CONTOUR_AREA:
+            if cv2.contourArea(cnt) > MIN_CONTOUR_AREA:
                 x, y, w, h = cv2.boundingRect(cnt)
-                
-                # Aspect Ratio Check
-                if w > 1.2 * h:
-                    continue
+                valid_boxes.append((x, y, w, h))
+        
+        # If we found ANY motion in this camera view, merge it into ONE crop
+        if valid_boxes:
+            # 1. Find the "Union" rectangle that covers ALL boxes
+            min_x = min([b[0] for b in valid_boxes])
+            min_y = min([b[1] for b in valid_boxes])
+            max_x = max([b[0] + b[2] for b in valid_boxes])
+            max_y = max([b[1] + b[3] for b in valid_boxes])
+            
+            # Calculate width and height of this "Union Group"
+            group_w = max_x - min_x
+            group_h = max_y - min_y
+            
+            # 2. Apply Adaptive Padding to the WHOLE Group
+            pad_w = int(group_w * PADDING_RATIO)
+            pad_h = int(group_h * PADDING_RATIO)
 
-                # --- NEW: Adaptive Padding Logic ---
-                # Calculate padding based on the OBJECT'S size
-                pad_w = int(w * PADDING_RATIO)
-                pad_h = int(h * PADDING_RATIO)
-
-                # Apply padding with boundary checks
-                x_new = max(0, x - pad_w)
-                y_new = max(0, y - pad_h)
-                x_end = min(frame_w, x + w + pad_w)
-                y_end = min(frame_h, y + h + pad_h)
-                
-                roi = frame[y_new:y_end, x_new:x_end]
-                extracted_rois.append(roi)
+            x_new = max(0, min_x - pad_w)
+            y_new = max(0, min_y - pad_h)
+            x_end = min(frame_w, max_x + pad_w)
+            y_end = min(frame_h, max_y + pad_h)
+            
+            # 3. Crop once
+            roi = frame[y_new:y_end, x_new:x_end]
+            extracted_rois.append(roi)
 
     # --- Create Canvas ---
     canvas = np.zeros((CANVAS_SIZE[0], CANVAS_SIZE[1], 3), dtype=np.uint8)
