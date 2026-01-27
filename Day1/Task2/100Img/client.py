@@ -8,7 +8,7 @@ import os
 SERVER_IP = "127.0.0.1"
 URL = f"http://{SERVER_IP}:5000/predict_batch"
 NUM_IMAGES = 100
-RANDOM_SEED = 42  # Set this to any integer to get consistent images
+RANDOM_SEED = 4  # Set this to any integer to get consistent images
 
 def run_batch_test(seed=None):
     if seed is not None:
