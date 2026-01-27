@@ -1,0 +1,11 @@
+# Standard versions for Windows/PC
+tensorflow
+torch
+torchvision
+opencv-python
+Pillow
+matplotlib
+scipy
+
+# Critical Fix for Windows too
+numpy<2.0.0

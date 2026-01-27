@@ -1,0 +1,27 @@
+#!/bin/bash
+# 1. Install System Dependencies
+sudo apt-get update
+sudo apt-get install -y python3-pip libopenblas-base libopenmpi-dev libomp-dev libjpeg-dev zlib1g-dev
+
+# 2. Install Basic Python Libs
+pip3 install Cython
+pip3 install numpy==1.19.4 future==0.18.2 mock==3.0.5 h5py==2.10.0 keras_preprocessing==1.1.2 keras_applications==1.0.8 gast==0.4.0 protobuf pybind11
+
+# 3. Install PyTorch (v1.10 for JetPack 4.6)
+wget https://nvidia.box.com/shared/static/fjtbno0vpo676a25cgvwurt16pegl662.whl -O torch-1.10.0-cp36-cp36m-linux_aarch64.whl
+pip3 install torch-1.10.0-cp36-cp36m-linux_aarch64.whl
+
+# 4. Install TorchVision (Compile from Source)
+git clone --branch v0.11.1 https://github.com/pytorch/vision torchvision
+cd torchvision
+export BUILD_VERSION=0.11.1
+python3 setup.py install --user
+cd ..
+
+# 5. Install TensorFlow (Optimized)
+pip3 install --pre --extra-index-url https://developer.download.nvidia.com/compute/redist/jp/v46 tensorflow
+
+# 6. Install Torch2TRT (Speed Boost)
+git clone https://github.com/NVIDIA-AI-IOT/torch2trt
+cd torch2trt
+python3 setup.py install --user
