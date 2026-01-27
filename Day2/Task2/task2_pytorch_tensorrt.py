@@ -8,30 +8,34 @@ from PIL import Image
 weights = models.ResNet50_Weights.IMAGENET1K_V1
 model = models.resnet50(weights=weights).cuda().eval()
 
-# 2. Create dummy input for the converter (batch_size, channels, height, width)
+# 2. Convert to TensorRT
+# We use fp16_mode=True to significantly boost performance on Jetson hardware
 x = torch.ones((1, 3, 224, 224)).cuda()
-
-# 3. Convert to TensorRT (FP16 mode is highly recommended for Jetson Nano)
-print("Converting model to TensorRT... (this may take a few minutes)")
+print("Converting to TensorRT (this may take a few minutes)...")
 model_trt = torch2trt(model, [x], fp16_mode=True)
 
-def run_trt_inference(image_path):
+def benchmark_trt(image_path, iterations=50):
     preprocess = weights.transforms()
     img = Image.open(image_path).convert('RGB')
     input_tensor = preprocess(img).unsqueeze(0).cuda()
 
-    # Warm up
-    for _ in range(5):
+    print("Warming up...")
+    for _ in range(10):
         _ = model_trt(input_tensor)
 
-    # Measure Latency
+    print(f"Running {iterations} iterations...")
+    torch.cuda.synchronize()
     start_time = time.time()
-    output = model_trt(input_tensor)
-    latency = (time.time() - start_time) * 1000 # ms
     
-    print(f"TensorRT Inference Latency: {latency:.2f} ms")
-    print(f"Estimated FPS: {1000/latency:.2f}")
-    return output
+    for _ in range(iterations):
+        _ = model_trt(input_tensor)
+        
+    torch.cuda.synchronize()
+    end_time = time.time()
+    
+    latency = ((end_time - start_time) / iterations) * 1000
+    fps = 1000 / latency
+    print(f"TensorRT Latency: {latency:.2f} ms | FPS: {fps:.2f}")
 
 if __name__ == "__main__":
-    run_trt_inference("test_image.jpg")
+    benchmark_trt("test.jpg")
