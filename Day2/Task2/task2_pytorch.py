@@ -24,22 +24,24 @@ def load_labels():
         return None
 
 def main():
-    print(f"--- Running Standard PyTorch Benchmark on {DEVICE} ---")
+    print(f"--- Running Standard PyTorch Benchmark (MobileNetV2) on {DEVICE} ---")
 
-    # 1. Load Model (GoogLeNet)
-    print("[1] Loading GoogLeNet...")
+    # 1. Load Model (MobileNetV2)
+    print("[1] Loading MobileNetV2...")
     try:
-        # Try modern weights syntax
-        weights = models.GoogLeNet_Weights.IMAGENET1K_V2
-        model = models.googlenet(weights=weights).to(DEVICE).eval()
+        # Modern PyTorch Syntax (For your Laptop)
+        weights = models.MobileNet_V2_Weights.IMAGENET1K_V1
+        model = models.mobilenet_v2(weights=weights).to(DEVICE).eval()
         preprocess = weights.transforms()
     except:
-        # Fallback for older PyTorch versions
-        model = models.googlenet(pretrained=True).to(DEVICE).eval()
+        # Legacy Syntax (For Jetson Nano / Older PyTorch)
+        print("    > Using legacy load method (standard for Jetson)...")
+        model = models.mobilenet_v2(pretrained=True).to(DEVICE).eval()
         preprocess = transforms.Compose([
-            transforms.Resize(256), transforms.CenterCrop(224),
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
 
     # 2. Latency Test (Speed)

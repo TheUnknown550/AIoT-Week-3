@@ -22,20 +22,24 @@ def load_labels():
     except: return None
 
 def main():
-    print(f"--- Running TensorRT Optimized Benchmark ---")
+    print(f"--- Running TensorRT Optimized Benchmark (MobileNetV2) ---")
 
     # 1. Load Standard Model First
-    print("[1] Loading GoogLeNet...")
+    print("[1] Loading MobileNetV2...")
     try:
-        weights = models.GoogLeNet_Weights.IMAGENET1K_V2
-        model = models.googlenet(weights=weights).to(DEVICE).eval()
+        # Modern PyTorch Syntax
+        weights = models.MobileNet_V2_Weights.IMAGENET1K_V1
+        model = models.mobilenet_v2(weights=weights).to(DEVICE).eval()
         preprocess = weights.transforms()
     except:
-        model = models.googlenet(pretrained=True).to(DEVICE).eval()
+        # Legacy Syntax (Jetson Nano default)
+        print("    > Using legacy load method (standard for Jetson)...")
+        model = models.mobilenet_v2(pretrained=True).to(DEVICE).eval()
         preprocess = transforms.Compose([
-            transforms.Resize(256), transforms.CenterCrop(224),
+            transforms.Resize(256), 
+            transforms.CenterCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
 
     # 2. Optimize with TensorRT
@@ -43,8 +47,14 @@ def main():
     dummy_input = torch.randn(1, 3, 224, 224).to(DEVICE)
     
     # FP16 Mode = Half Precision (Massive speedup on Jetson)
-    model_trt = torch2trt(model, [dummy_input], fp16_mode=True)
-    print("    > Optimization Complete!")
+    try:
+        # We convert the PyTorch model to a TensorRT engine here
+        model_trt = torch2trt(model, [dummy_input], fp16_mode=True)
+        print("    > Optimization Complete!")
+    except Exception as e:
+        print(f"    > Error during optimization: {e}")
+        print("    > Make sure torch2trt is installed correctly!")
+        return
 
     # 3. Latency Test (Using Optimized Model)
     print("\n[3] Benchmarking Inference Speed (TensorRT)...")
