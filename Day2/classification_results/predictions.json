@@ -1,0 +1,80 @@
+[
+  {
+    "image": "IM1.png",
+    "inference_time_ms": 378.19,
+    "top_5_predictions": [
+      {
+        "class": "tiger cat",
+        "confidence": 0.5476
+      },
+      {
+        "class": "lynx",
+        "confidence": 0.1694
+      },
+      {
+        "class": "Egyptian cat",
+        "confidence": 0.1265
+      },
+      {
+        "class": "tabby",
+        "confidence": 0.0943
+      },
+      {
+        "class": "mouse",
+        "confidence": 0.0038
+      }
+    ]
+  },
+  {
+    "image": "IM2.png",
+    "inference_time_ms": 7.14,
+    "top_5_predictions": [
+      {
+        "class": "barracouta",
+        "confidence": 0.3377
+      },
+      {
+        "class": "tench",
+        "confidence": 0.1814
+      },
+      {
+        "class": "puffer",
+        "confidence": 0.0388
+      },
+      {
+        "class": "coho",
+        "confidence": 0.0232
+      },
+      {
+        "class": "goldfish",
+        "confidence": 0.0203
+      }
+    ]
+  },
+  {
+    "image": "IM3.png",
+    "inference_time_ms": 6.07,
+    "top_5_predictions": [
+      {
+        "class": "Labrador retriever",
+        "confidence": 0.5455
+      },
+      {
+        "class": "golden retriever",
+        "confidence": 0.0751
+      },
+      {
+        "class": "bull mastiff",
+        "confidence": 0.0374
+      },
+      {
+        "class": "dingo",
+        "confidence": 0.0218
+      },
+      {
+        "class": "kuvasz",
+        "confidence": 0.0184
+      }
+    ]
+  }
+]

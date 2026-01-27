@@ -1,0 +1,22 @@
+{
+  "summary": {
+    "avg_fps": 4.3440648606562275,
+    "avg_latency_ms": 22.425742188761056,
+    "min_latency_ms": 19.01102066040039,
+    "max_latency_ms": 35.410165786743164,
+    "std_latency_ms": 2.2923831133369292,
+    "total_detections": 1036,
+    "avg_detections_per_frame": 8.561983471074381,
+    "avg_roi_size_pixels": 135407.28080229225,
+    "avg_memory_mb": 239.42662060950414,
+    "peak_memory_mb": 240.5546875,
+    "throughput_fps": 44.591612245554245,
+    "frames_processed": 121
+  },
+  "processing_time_breakdown_ms": {
+    "motion_detection": 10.723949463899471,
+    "contour_finding": 0.6676764527628244,
+    "roi_extraction": 0.14616635220109925,
+    "canvas_creation": 1.001086116822298
+  }
+}
