@@ -1,0 +1,43 @@
+============================================================
+GoogLeNet Classification Results
+============================================================
+
+Image: IM1.png
+Inference Time: 378.19 ms
+Top-1 Prediction: tiger cat (54.76%)
+
+Top-5 Predictions:
+  1. tiger cat                      0.5476
+  2. lynx                           0.1694
+  3. Egyptian cat                   0.1265
+  4. tabby                          0.0943
+  5. mouse                          0.0038
+
+------------------------------------------------------------
+
+Image: IM2.png
+Inference Time: 7.14 ms
+Top-1 Prediction: barracouta (33.77%)
+
+Top-5 Predictions:
+  1. barracouta                     0.3377
+  2. tench                          0.1814
+  3. puffer                         0.0388
+  4. coho                           0.0232
+  5. goldfish                       0.0203
+
+------------------------------------------------------------
+
+Image: IM3.png
+Inference Time: 6.07 ms
+Top-1 Prediction: Labrador retriever (54.55%)
+
+Top-5 Predictions:
+  1. Labrador retriever             0.5455
+  2. golden retriever               0.0751
+  3. bull mastiff                   0.0374
+  4. dingo                          0.0218
+  5. kuvasz                         0.0184
+
+------------------------------------------------------------
+
