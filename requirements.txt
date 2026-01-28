@@ -6,6 +6,7 @@ opencv-python
 Pillow
 matplotlib
 scipy
+mediapipe
 
 # Critical Fix for Windows too
 numpy<2.0.0
